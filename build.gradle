@@ -23,6 +23,8 @@ ext {
 }
 
 dependencies {
+	implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery:4.1.2'
+	implementation 'org.springframework.cloud:spring-cloud-starter-consul-config:4.1.2'
 	implementation 'io.projectreactor.kotlin:reactor-kotlin-extensions'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-reactor'

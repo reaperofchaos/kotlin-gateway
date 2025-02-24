@@ -1,5 +1,41 @@
 server:
   port: 3001
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: api-gateway
+  config:
+    import: "optional:consul:"
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        register: false
+        registerHealthCheck: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          predicates:
+            - name: Path
+              args:
+                pattern: "'/services/'+serviceId.toLowerCase()+'/**'"
+          filters:
+            - StripPrefix=2
+        routes:
+          - id: consul-client
+            uri: lb://consul-client
+            predicates:
+              - Path=/test/**
+
+#        service-name: gateway
+#        locator:
+#          enabled: true
+#          lowerCaseServiceId: true
+
+
 #spring:
 #  cloud:
 #    gateway:
