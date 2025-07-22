@@ -18,32 +18,14 @@ spring:
       discovery:
         locator:
           enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: consul-client
+          uri: http://localhost:999
           predicates:
-            - name: Path
-              args:
-                pattern: "'/services/'+serviceId.toLowerCase()+'/**'"
+            - Path=/test/consul-client/**
           filters:
-            - StripPrefix=2
-        routes:
-          - id: consul-client
-            uri: lb://consul-client
-            predicates:
-              - Path=/test/**
-
-#        service-name: gateway
-#        locator:
-#          enabled: true
-#          lowerCaseServiceId: true
-
-
-#spring:
-#  cloud:
-#    gateway:
-#      routes:
-#        - id: source-service
-#          uri: http://localhost:8081
-#          predicates:
-#            - Path=/source/**
+            - RewritePath=/test/consul-client/?(.*), /
 
 management:
   endpoints:
