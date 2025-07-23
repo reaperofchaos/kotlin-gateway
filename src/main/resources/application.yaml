@@ -1,5 +1,10 @@
 server:
   port: 3001
+
+# Custom DNS configuration
+dns:
+  hostname: ${HOST_NAME}
+  
 spring:
   main:
     web-application-type: reactive
@@ -14,18 +19,25 @@ spring:
       discovery:
         register: false
         registerHealthCheck: false
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${random.value}
     gateway:
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
-      routes:
-        - id: consul-client
-          uri: http://localhost:999
-          predicates:
-            - Path=/test/consul-client/**
-          filters:
-            - RewritePath=/test/consul-client/?(.*), /
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+      default-filters:
+        - name: RewritePath
+          args:
+            regexp: "/(?<service>[^/]+)/(?<remaining>.*)"
+            replacement: "/${remaining}"
+        - name: RewritePath
+          args:
+            regexp: "/(?<service>[^/]+)$"
+            replacement: "/"
 
 management:
   endpoints:
