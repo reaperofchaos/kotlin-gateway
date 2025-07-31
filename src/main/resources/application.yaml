@@ -1,10 +1,5 @@
 server:
   port: 3001
-
-# Custom DNS configuration
-dns:
-  hostname: ${HOST_NAME}
-  
 spring:
   main:
     web-application-type: reactive
@@ -19,25 +14,16 @@ spring:
       discovery:
         register: false
         registerHealthCheck: false
-        prefer-ip-address: true
-        instance-id: ${spring.application.name}:${random.value}
     gateway:
       discovery:
         locator:
           enabled: true
-          lower-case-service-id: true
-      httpclient:
-        connect-timeout: 1000
-        response-timeout: 5s
-      default-filters:
-        - name: RewritePath
-          args:
-            regexp: "/(?<service>[^/]+)/(?<remaining>.*)"
-            replacement: "/${remaining}"
-        - name: RewritePath
-          args:
-            regexp: "/(?<service>[^/]+)$"
-            replacement: "/"
+          predicates:
+            - name: Path
+              args:
+                pattern: "'/services/'+serviceId.toLowerCase()+'/**'"
+          filters:
+            - StripPrefix=2
 
 management:
   endpoints:
